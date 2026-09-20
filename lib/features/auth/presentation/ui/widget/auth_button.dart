@@ -1,0 +1,80 @@
+import 'package:flutter/material.dart';
+
+import '../../../../../core/theme/app_colors.dart';
+
+class AuthButton extends StatelessWidget {
+  final String text;
+  final VoidCallback? onPressed;
+  final bool isLoading;
+  final IconData? icon;
+
+  const AuthButton({
+    super.key,
+    required this.text,
+    required this.onPressed,
+    this.isLoading = false,
+    this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 52,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        gradient: onPressed == null || isLoading
+            ? null
+            : AppColors.primaryGradient,
+        color: (onPressed == null || isLoading)
+            ? AppColors.primary.withAlpha(128)
+            : null,
+        boxShadow: (onPressed == null || isLoading)
+            ? []
+            : [
+                BoxShadow(
+                  color: AppColors.primary.withAlpha(70),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: isLoading ? null : onPressed,
+          child: Center(
+            child: isLoading
+                ? const SizedBox(
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.4,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (icon != null) ...[
+                        Icon(icon, color: Colors.white, size: 20),
+                        const SizedBox(width: 8),
+                      ],
+                      Text(
+                        text,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+                    ],
+                  ),
+          ),
+        ),
+      ),
+    );
+  }
+}
