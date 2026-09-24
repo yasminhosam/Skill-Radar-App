@@ -1,61 +1,57 @@
 class Job {
-  final String guid;
-  final String? title;
-  final String? companyName;
+  final String title;
+  final String companyName;
   final String? companyLogo;
-  final String? employmentType;
+  final String employmentType;
   final List<String> seniority;
   final List<String> categories;
   final List<String> parentCategories;
-  final String? description;
-  final String? applicationLink;
+  final String description;
+  final String applicationLink;
+  final String guid;
 
-
-  Job({
-    required this.guid,
-    this.title,
-    this.companyName,
+  const Job({
+    required this.title,
+    required this.companyName,
     this.companyLogo,
-    this.employmentType,
-    this.seniority = const [],
-    this.categories = const [],
-    this.parentCategories = const [],
-    this.description,
-    this.applicationLink,
+    required this.employmentType,
+    required this.seniority,
+    required this.categories,
+    required this.parentCategories,
+    required this.description,
+    required this.applicationLink,
+    required this.guid,
   });
 
+
+  static List<String> _stringList(dynamic value) =>
+      (value as List?)?.map((e) => e.toString()).toList() ?? const [];
+
   factory Job.fromJson(Map<String, dynamic> json) {
-    final guid =json['guid'] as String?;
-    if (guid == null || guid.isEmpty) {
-      throw FormatException('Job JSON is missing a required guid: $json');
-    }
     return Job(
-      guid: guid,
-      title: json['title'],
-      companyName: json['companyName'],
-      companyLogo: json['companyLogo'],
-      employmentType: json['employmentType'],
-      seniority: (json['seniority'] as List?)?.cast<String>() ?? const [],
-      categories: (json['categories'] as List?)?.cast<String>() ?? const [],
-      parentCategories:
-      (json['parentCategories'] as List?)?.cast<String>() ?? const [],
-      description: json['description'],
-      applicationLink: json['applicationLink'],
+      title: json['title'] as String? ?? '',
+      companyName: json['companyName'] as String? ?? '',
+      companyLogo: json['companyLogo'] as String?,
+      employmentType: json['employmentType'] as String? ?? '',
+      seniority: _stringList(json['seniority']),
+      categories: _stringList(json['categories']),
+      parentCategories: _stringList(json['parentCategories']),
+      description: json['description'] as String? ?? '',
+      applicationLink: json['applicationLink'] as String? ?? '',
+      guid: json['guid'] as String? ?? '',
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'guid': guid,
-      'title': title,
-      'companyName': companyName,
-      'companyLogo': companyLogo,
-      'employmentType': employmentType,
-      'seniority': seniority,
-      'categories': categories,
-      'parentCategories': parentCategories,
-      'description': description,
-      'applicationLink': applicationLink,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+    'title': title,
+    'companyName': companyName,
+    'companyLogo': companyLogo,
+    'employmentType': employmentType,
+    'seniority': seniority,
+    'categories': categories,
+    'parentCategories': parentCategories,
+    'description': description,
+    'applicationLink': applicationLink,
+    'guid': guid,
+  };
 }

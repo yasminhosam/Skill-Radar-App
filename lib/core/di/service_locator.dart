@@ -5,6 +5,8 @@ import 'package:get_it/get_it.dart';
 
 import '../../features/auth/data/auth_service.dart';
 import '../../features/auth/presentation/cubit/auth_cubit.dart';
+import '../../features/jobs/data/repo/job_repo.dart';
+import '../../features/jobs/presentation/cubit/job_cubit.dart';
 import '../../features/profile/data/repo/user_repo.dart';
 import '../../features/profile/presentation/cubit/profile_cubit.dart';
 import '../networking/dio_factory.dart';
@@ -20,7 +22,12 @@ Future<void> setupGetIt() async {
   getIt.registerLazySingleton<AuthService>(() => AuthService(getIt<FirebaseAuth>()));
   getIt.registerFactory<AuthCubit>(() => AuthCubit(getIt<AuthService>(),getIt<UserRepo>()));
 
+  // Firestore & Profile
   getIt.registerLazySingleton<FirebaseFirestore>(() => FirebaseFirestore.instance);
   getIt.registerLazySingleton<UserRepo>(() => UserRepo(getIt<FirebaseFirestore>()));
   getIt.registerFactory<ProfileCubit>(() => ProfileCubit(getIt<UserRepo>()));
+
+  // Jobs
+  getIt.registerLazySingleton<JobRepo>(() => JobRepo(getIt<Dio>()));
+  getIt.registerFactory<JobCubit>(() => JobCubit(getIt<JobRepo>()));
 }
