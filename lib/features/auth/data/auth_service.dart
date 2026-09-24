@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 class AuthService {
   final FirebaseAuth _firebaseAuth;
@@ -31,20 +32,22 @@ class AuthService {
   Future<UserCredential> register({
     required String email,
     required String password,
-    String? name,
+    required String name,
   }) async {
     try {
+      debugPrint('AuthService: attempting createUserWithEmailAndPassword for $email');
       final credential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email.trim(),
         password: password,
       );
-      if (name != null && name.trim().isNotEmpty) {
-        await credential.user?.updateDisplayName(name.trim());
-      }
+      debugPrint('AuthService: register success, uid: ${credential.user?.uid}');
+      await credential.user?.updateDisplayName(name.trim());
       return credential;
     } on FirebaseAuthException catch (e) {
+      debugPrint('AuthService: FirebaseAuthException code: ${e.code}, message: ${e.message}');
       throw _handleAuthException(e);
     } catch (e) {
+      debugPrint('AuthService: unexpected exception: $e');
       throw 'An unexpected error occurred. Please try again.';
     }
   }

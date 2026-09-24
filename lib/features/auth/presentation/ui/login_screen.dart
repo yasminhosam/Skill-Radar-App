@@ -91,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           // Email
                           AuthTextField(
                             controller: _emailController,
-                            label: 'Work Email',
+                            label: 'Email',
                             hintText: 'alex@example.com',
                             prefixIcon: Icons.alternate_email_rounded,
                             keyboardType: TextInputType.emailAddress,
@@ -160,8 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           // Sign In Button
                           AuthButton(
-                            text: 'Sign In to Radar',
-                            icon: Icons.login_rounded,
+                            text: 'Sign In',
                             isLoading: isLoading,
                             onPressed: () => _onLogin(context),
                           ),
@@ -198,13 +197,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           const SizedBox(height: 36),
 
-                          // Data-driven branding footer
-                          const MarketStatCard(
-                            icon: Icons.analytics_outlined,
-                            title: 'Real-Time Market Benchmarks',
-                            subtitle:
-                                'Skill requirements analyzed from thousands of live tech job listings.',
-                          ),
                         ],
                       ),
                     ),

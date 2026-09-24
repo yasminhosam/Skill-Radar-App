@@ -8,7 +8,6 @@ import '../cubit/auth_state.dart';
 import 'widget/auth_button.dart';
 import 'widget/auth_header.dart';
 import 'widget/auth_text_field.dart';
-import 'widget/market_stat_card.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -24,16 +23,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  String _selectedRole = 'Mobile Developer';
-  final List<String> _popularRoles = [
-    'Mobile Developer',
-    'Frontend Engineer',
-    'Backend Engineer',
-    'Full Stack Engineer',
-    'DevOps / Cloud',
-    'AI / ML Engineer',
-  ];
-
   @override
   void dispose() {
     _nameController.dispose();
@@ -46,10 +35,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _onRegister(BuildContext context) {
     if (_formKey.currentState?.validate() ?? false) {
       context.read<AuthCubit>().register(
-            email: _emailController.text.trim(),
-            password: _passwordController.text,
-            name: _nameController.text.trim(),
-          );
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+        name: _nameController.text.trim(),
+      );
     }
   }
 
@@ -61,12 +50,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
         backgroundColor: AppColors.background,
         body: BlocConsumer<AuthCubit, AuthState>(
           listener: (context, state) {
+            debugPrint('RegisterScreen: state changed to ${state.runtimeType}');
             if (state is AuthError) {
+              debugPrint('RegisterScreen: AuthError message: ${state.message}');
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Row(
                     children: [
-                      const Icon(Icons.error_outline, color: Colors.white, size: 20),
+                      const Icon(
+                        Icons.error_outline,
+                        color: Colors.white,
+                        size: 20,
+                      ),
                       const SizedBox(width: 10),
                       Expanded(child: Text(state.message)),
                     ],
@@ -79,10 +74,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               );
             } else if (state is Authenticated) {
+              debugPrint('RegisterScreen: Authenticated state received for uid: ${state.user.uid}. Navigating to profileSetupScreen...');
+              // Navigate to profile setup, passing the new user's uid.
               Navigator.pushNamedAndRemoveUntil(
                 context,
-                AppRoutes.homeScreen,
+                AppRoutes.profileSetupScreen,
                 (route) => false,
+                arguments: state.user.uid,
               );
             }
           },
@@ -92,7 +90,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
             return SafeArea(
               child: Center(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0,
+                    vertical: 16.0,
+                  ),
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 420),
                     child: Form(
@@ -125,7 +126,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           // Email
                           AuthTextField(
                             controller: _emailController,
-                            label: 'Work Email',
+                            label: 'Email',
                             hintText: 'alex@example.com',
                             prefixIcon: Icons.alternate_email_rounded,
                             keyboardType: TextInputType.emailAddress,
@@ -133,75 +134,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               if (value == null || value.trim().isEmpty) {
                                 return 'Please enter your email';
                               }
-                              if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                                  .hasMatch(value.trim())) {
+                              if (!RegExp(
+                                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                              ).hasMatch(value.trim())) {
                                 return 'Enter a valid email address';
                               }
                               return null;
                             },
-                          ),
-                          const SizedBox(height: 16),
-
-                          // Target Role Selector
-                          const Text(
-                            'Target Role',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary,
-                              letterSpacing: 0.2,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          DropdownButtonFormField<String>(
-                            value: _selectedRole,
-                            items: _popularRoles.map((role) {
-                              return DropdownMenuItem(
-                                value: role,
-                                child: Text(
-                                  role,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: AppColors.textPrimary,
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                            onChanged: (val) {
-                              if (val != null) {
-                                setState(() {
-                                  _selectedRole = val;
-                                });
-                              }
-                            },
-                            decoration: InputDecoration(
-                              prefixIcon: const Icon(
-                                Icons.work_outline_rounded,
-                                color: AppColors.textSecondary,
-                                size: 20,
-                              ),
-                              filled: true,
-                              fillColor: Colors.white,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 14,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: AppColors.border),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: AppColors.border),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(
-                                  color: AppColors.borderFocused,
-                                  width: 1.8,
-                                ),
-                              ),
-                            ),
                           ),
                           const SizedBox(height: 16),
 
@@ -248,7 +187,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           // Create Account Button
                           AuthButton(
                             text: 'Create Account',
-                            icon: Icons.rocket_launch_outlined,
                             isLoading: isLoading,
                             onPressed: () => _onRegister(context),
                           ),
@@ -278,15 +216,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 24),
 
-                          // Data-driven branding footer
-                          const MarketStatCard(
-                            icon: Icons.track_changes_rounded,
-                            title: 'Tailored to Market Reality',
-                            subtitle:
-                                'Identify the exact skills employers are hiring for right now.',
-                          ),
                         ],
                       ),
                     ),

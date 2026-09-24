@@ -1,38 +1,36 @@
 import 'job_model.dart';
 
 class JobSearchResponse {
-  int? limit;
-  int? totalCount;
-  String? nextCursor;
-  List<Job>? jobs;
+  final int? limit;
+  final int? totalCount;
+  final String? nextCursor;
+  final List<Job> jobs;
 
-  JobSearchResponse(
-      {
-        this.limit,
-        this.totalCount,
-        this.nextCursor,
-        this.jobs});
+  JobSearchResponse({
+    this.limit,
+    this.totalCount,
+    this.nextCursor,
+    this.jobs = const [],
+  });
 
-  JobSearchResponse.fromJson(Map<String, dynamic> json) {
-    limit = json['limit'];
-    totalCount = json['totalCount'];
-    nextCursor = json['nextCursor'];
-    if (json['jobs'] != null) {
-      jobs = <Job>[];
-      json['jobs'].forEach((v) {
-        jobs!.add(new Job.fromJson(v));
-      });
-    }
+  factory JobSearchResponse.fromJson(Map<String, dynamic> json) {
+    return JobSearchResponse(
+      limit: json['limit'],
+      totalCount: json['totalCount'],
+      nextCursor: json['nextCursor'],
+      jobs: (json['jobs'] as List?)
+          ?.map((v) => Job.fromJson(v as Map<String, dynamic>))
+          .toList() ??
+          const [],
+    );
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['limit'] = this.limit;
-    data['totalCount'] = this.totalCount;
-    data['nextCursor'] = this.nextCursor;
-    if (this.jobs != null) {
-      data['jobs'] = this.jobs!.map((v) => v.toJson()).toList();
-    }
-    return data;
+    return {
+      'limit': limit,
+      'totalCount': totalCount,
+      'nextCursor': nextCursor,
+      'jobs': jobs.map((v) => v.toJson()).toList(),
+    };
   }
 }
